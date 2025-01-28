@@ -5,8 +5,6 @@ import { easing } from 'maath'
 import { suspend } from 'suspend-react'
 import { Instances, Computers } from './Computers'
 
-const suzi = import('@pmndrs/assets/models/bunny.glb')
-
 export default function App() {
   return (
     <Canvas shadows dpr={[1, 1.5]} camera={{ position: [-1.5, 1, 5.5], fov: 45, near: 1, far: 20 }} eventSource={document.getElementById('root')} eventPrefix="client">
@@ -36,9 +34,6 @@ export default function App() {
             metalness={0.8}
           />
         </mesh>
-        {/* Bunny and a light give it more realism */}
-        <Bun scale={0.4} position={[0, 0.3, 0.5]} rotation={[0, -Math.PI * 0.85, 0]} />
-        <pointLight distance={1.5} intensity={1} position={[-0.15, 0.7, 0]} color="orange" />
       </group>
       {/* Postprocessing */}
       <EffectComposer disableNormalPass>
@@ -46,26 +41,7 @@ export default function App() {
         <DepthOfField target={[0, 0, 13]} focalLength={0.3} bokehScale={15} height={700} />
       </EffectComposer>
       {/* Camera movements */}
-      <CameraRig />
       {/* Small helper that freezes the shadows for better performance */}
-      <BakeShadows />
     </Canvas>
   )
-}
-
-function Bun(props) {
-  const { nodes } = useGLTF(suspend(suzi).default)
-  console.log(nodes)
-  return (
-    <mesh receiveShadow castShadow geometry={nodes.mesh.geometry} {...props}>
-      <meshStandardMaterial color="#222" roughness={0.5} />
-    </mesh>
-  )
-}
-
-function CameraRig() {
-  useFrame((state, delta) => {
-    easing.damp3(state.camera.position, [-1 + (state.pointer.x * state.viewport.width) / 3, (1 + state.pointer.y) / 2, 5.5], 0.5, delta)
-    state.camera.lookAt(0, 0, 0)
-  })
 }

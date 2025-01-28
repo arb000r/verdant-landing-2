@@ -1,18 +1,22 @@
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 import App from './App'
-import { Logo } from '@pmndrs/branding'
 
 function Overlay() {
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-      <a href="https://pmnd.rs/" style={{ position: 'absolute', bottom: 40, left: 90, fontSize: '13px' }}>
-        pmnd.rs
+      <a href="mailto:contact@verdant.fund" style={{ position: 'absolute', bottom: 40, left: 90, fontSize: '13px' }}>
+        Verdant
         <br />
-        dev collective
+        Proprietary Trading Firm
+        <br />
+        Contact
       </a>
-      <div style={{ position: 'absolute', top: 40, left: 40, fontSize: '13px' }}>ok —</div>
-      <div style={{ position: 'absolute', bottom: 40, right: 40, fontSize: '13px' }}>16/12/2022</div>
+      <div style={{ color: '#A9A9A9', position: 'absolute', bottom: 40, right: 40, fontSize: '13px' }}>
+        <a style={{ color: '#A9A9A9' }} href="https://pmnd.rs">
+          site credit pmnd.rs
+        </a>
+      </div>
     </div>
   )
 }
@@ -21,6 +25,5 @@ createRoot(document.getElementById('root')).render(
   <>
     <App />
     <Overlay />
-    <Logo style={{ position: 'absolute', bottom: 40, left: 40, width: 30 }} />
   </>
 )

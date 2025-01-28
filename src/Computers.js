@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useMemo, useContext, createContext, useRef } from 'react'
+import { useMemo, useContext, createContext, useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF, Merged, RenderTexture, PerspectiveCamera, Text } from '@react-three/drei'
 import { SpinningBox } from './SpinningBox'
@@ -149,7 +149,7 @@ export function Computers(props) {
       <instances.Object36 position={[-1.1, 4.29, -4.43]} rotation={[0, 0.36, 0]} />
       <instances.Object36 position={[-5.25, 4.29, -1.47]} rotation={[0, 1.25, 0]} />
       <mesh castShadow receiveShadow geometry={n.Object_204.geometry} material={m.Texture} position={[3.2, 4.29, -3.09]} rotation={[-Math.PI, 0.56, 0]} scale={-1} />
-      <ScreenInteractive frame="Object_206" panel="Object_207" position={[0.27, 1.53, -2.61]} />
+      <BinanceText frame="Object_206" panel="Object_207" position={[0.27, 1.53, -2.61]} />
       <ScreenText frame="Object_209" panel="Object_210" y={5} position={[-1.43, 2.5, -1.8]} rotation={[0, 1, 0]} />
       <ScreenText invert frame="Object_212" panel="Object_213" x={-5} y={5} position={[-2.73, 0.63, -0.52]} rotation={[0, 1.09, 0]} />
       <ScreenText invert frame="Object_215" panel="Object_216" position={[1.84, 0.38, -1.77]} rotation={[0, -Math.PI / 9, 0]} />
@@ -181,6 +181,43 @@ function Screen({ frame, panel, children, ...props }) {
   )
 }
 
+function BinanceText({ invert, x = 0, y = 1.2, ...props }) {
+  const textRef = useRef()
+  const rand = Math.random() * 10000
+  const [btcPrice, setBtcPrice] = useState(null)
+
+  useEffect(() => {
+    // WebSocket for binance BTCUSDT price ticker
+    const socket = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker')
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      // 'c' is the current last price in the ticker payload
+      setBtcPrice(parseFloat(data.c))
+    }
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error)
+    }
+
+    return () => {
+      socket.close()
+    }
+  }, [])
+
+  return (
+    <Screen {...props}>
+      <PerspectiveCamera makeDefault manual aspect={1 / 1} position={[0, 0, 15]} />
+      <color attach="background" args={[invert ? 'black' : '#35c19f']} />
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[10, 10, 5]} />
+      <Text font="/Inter-Medium.woff" position={[-4.7, y, 0]} ref={textRef} fontSize={0.6} letterSpacing={-0.1} color={!invert ? 'black' : '#35c19f'}>
+        {btcPrice ? `$${btcPrice.toFixed(2)}` : 'Loading...'}
+      </Text>
+    </Screen>
+  )
+}
+
 /* Renders a monitor with some text */
 function ScreenText({ invert, x = 0, y = 1.2, ...props }) {
   const textRef = useRef()
@@ -193,7 +230,7 @@ function ScreenText({ invert, x = 0, y = 1.2, ...props }) {
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} />
       <Text font="/Inter-Medium.woff" position={[x, y, 0]} ref={textRef} fontSize={4} letterSpacing={-0.1} color={!invert ? 'black' : '#35c19f'}>
-        Poimandres.
+        Verdant
       </Text>
     </Screen>
   )
@@ -204,7 +241,7 @@ function ScreenInteractive(props) {
   return (
     <Screen {...props}>
       <PerspectiveCamera makeDefault manual aspect={1 / 1} position={[0, 0, 10]} />
-      <color attach="background" args={['orange']} />
+      <color attach="background" args={['green']} />
       <ambientLight intensity={Math.PI / 2} />
       <pointLight decay={0} position={[10, 10, 10]} intensity={Math.PI} />
       <pointLight decay={0} position={[-10, -10, -10]} />
